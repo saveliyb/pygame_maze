@@ -48,7 +48,6 @@ class Drawing:
         pygame.draw.rect(self.display, BLACK, rect, border_radius=50)
         self.display.blit(render, (rect.centerx - 430, rect.centery - 140))
         pygame.display.flip()
-        self.clock.tick(15)
 
     def key(self, key):
         if key:
