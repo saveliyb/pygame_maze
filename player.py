@@ -1,9 +1,9 @@
-from pprint import pprint
+# from pprint import pprint
 
 from settings import *
 import pygame
 import math
-from map import collision_walls, player_pos
+from map import collision_walls, player_pos, door
 
 
 class Player:
@@ -20,6 +20,7 @@ class Player:
         self.side = 30
         self.rect = pygame.Rect(*player_pos, self.side, self.side)
         self.key = 0
+        self.iswining = 0
 
 
     @property
@@ -46,6 +47,10 @@ class Player:
     def iskey(self):
         return self.key
 
+    @property
+    def iswin(self):
+        return self.iswining
+
     def detect_collision(self, dx, dy):
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
@@ -54,6 +59,10 @@ class Player:
         if len(hit_indexes):
             delta_x, delta_y = 0, 0
             for hit_index in hit_indexes:
+                # print(self.collision_list[hit_index][:])
+                if self.collision_list[hit_index][:] == door:
+                    if self.key:
+                        self.iswining = 1
                 if self.collision_list[hit_index][2] == 30:
                     self.get_key()
                 try:

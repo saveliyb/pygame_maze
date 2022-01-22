@@ -32,6 +32,10 @@ while True:
 
     drawing.key(player.iskey)
 
+    # print(player.iswining)
+    if player.iswin:
+        drawing.win()
+
     drawing.fps(clock)
 
     pygame.display.flip()
