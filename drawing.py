@@ -9,13 +9,15 @@ from map import mini_map
 
 class Drawing:
     def __init__(self, display, clock):
+        self.font_win = pygame.font.Font('font/font.ttf', 144)
         self.display = display
         self.font = pygame.font.SysFont('Arial', 36, bold=True)
         self.clock = clock
         self.textures = {1: pygame.image.load('img/wall3.png').convert(),
-                         2: pygame.image.load('img/wall4.png').convert(),
-                         3: pygame.image.load('img/wall5.png').convert(),
-                         4: pygame.image.load('img/wall6.png').convert(),
+                         # 2: pygame.image.load('img/wall4.png').convert(),
+                         # 3: pygame.image.load('img/wall5.png').convert(),
+                         # 4: pygame.image.load('img/wall6.png').convert(),
+                         5: pygame.image.load('img/door.png').convert(),
                          'S': pygame.image.load('img/sky2.png').convert()
                          }
         self.menu_trigger = True
@@ -58,7 +60,7 @@ class Drawing:
     def menu(self):
         x = 0
         button_font = pygame.font.Font('font/font.ttf', 72)
-        label_font = pygame.font.Font('font/font1.otf', 400)
+        label_font = pygame.font.Font('font/font1.otf', 267)
         start = button_font.render('START', 1, pygame.Color('lightgray'))
         button_start = pygame.Rect(0, 0, 400, 150)
         button_start.center = HALF_WIDTH, HALF_HEIGHT

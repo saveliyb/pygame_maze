@@ -20,7 +20,7 @@ matrix_map = [
     [1, _, _, _, _, 1, _, 1, _, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, 1],
     [1, _, 1, _, 1, _, _, _, _, 1, _, _, 1, _, _, _, _, _,  _, _, _, 1, _, 1],
     [1, _, _, _, _, _, 1, _, _, _, _, _, 1, 1, _, _, _, _, _, _, 1, 1, _, 1],
-    [1, _, _, 1, _, _, _, _, 1, _, _, _, _, 1, 1, 1, 1, 1, 1, 1, 1, _, _, _],
+    [1, _, _, 1, _, _, _, _, 1, _, _, _, _, 1, 1, 1, 1, 1, 1, 1, 1, _, _, 5],
     [1, _, _, _, _, _, _, _, _, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
@@ -41,7 +41,6 @@ for j, row in enumerate(matrix_map):
             elif char == 'P':
                 world_map[(i * TILE, j * TILE)] = 1
                 player_pos = ((i - 1) * TILE, (j * TILE))
-            elif char == 'K':
-                print(i * TILE, (j * TILE))
-                Sprites.list_of_objects.append(SpriteObject(Sprites.sprite_parameters['sprite_key'], (i * TILE + 0.1, j * TILE + 0.1)))
-                print(Sprites.list_of_objects)
+            elif char == 5:
+                door = [i * TILE, j * TILE, 50, 50]
+                world_map[(i * TILE, j * TILE)] = 5
