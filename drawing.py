@@ -1,33 +1,104 @@
 import pygame
 from settings import *
-from ray_casting import ray_casting_player
+import sys
+from random import randrange
+from sprite_objects import SpritesParams
+from ray_casting import ray_casting
 from map import mini_map
 
 
 class Drawing:
-    def __init__(self, display, mini_map):
+    def __init__(self, display, clock):
         self.display = display
-        self.display_mini_map = mini_map
-        self.font = pygame.font.SysFont('Ariral', 36, bold=True)
+        self.font = pygame.font.SysFont('Arial', 36, bold=True)
+        self.clock = clock
+        self.textures = {1: pygame.image.load('img/wall3.png').convert(),
+                         2: pygame.image.load('img/wall4.png').convert(),
+                         3: pygame.image.load('img/wall5.png').convert(),
+                         4: pygame.image.load('img/wall6.png').convert(),
+                         'S': pygame.image.load('img/sky2.png').convert()
+                         }
+        self.menu_trigger = True
+        self.menu_picture = pygame.image.load('img/sky2.png').convert()
 
-    def backround(self):
-        pygame.draw.rect(self.display, SKY_BLUE, (0, 0, WIDTH, HALF_HEIGHT))
-        pygame.draw.rect(self.display, FLOOR_COLOR, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
+    def background(self, angle):
+        sky_offset = -10 * math.degrees(angle) % WIDTH
+        self.display.blit(self.textures['S'], (sky_offset, 0))
+        self.display.blit(self.textures['S'], (sky_offset - WIDTH, 0))
+        self.display.blit(self.textures['S'], (sky_offset + WIDTH, 0))
+        pygame.draw.rect(self.display, DARKGRAY, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
 
-    def world(self, player_pos, player_angel):
-        ray_casting_player(self.display, player_pos, player_angel)
+    def world(self, world_objects):
+        for obj in sorted(world_objects, key=lambda n: n[0], reverse=True):
+            if obj[0]:
+                _, object, object_pos = obj
+                self.display.blit(object, object_pos)
 
-    def fps(self, clock: pygame.time.Clock):
+    def fps(self, clock):
         display_fps = str(int(clock.get_fps()))
-        render = self.font.render(display_fps, 0, RED)
+        render = self.font.render(display_fps, 0, DARKORANGE)
         self.display.blit(render, FPS_POS)
 
-    def draw_mini_map(self, player):
-        self.display_mini_map.fill(BLACK)
-        map_x, map_y = player.x // MAP_SCALE, player.y // MAP_SCALE
-        pygame.draw.line(self.display_mini_map, YELLOW, (map_x, map_y), (map_x + 12 * math.cos(player.angle),
-                                                        map_y + 12 * math.sin(player.angle)))
-        pygame.draw.circle(self.display_mini_map, RED, (int(map_x), int(map_y)), 5)
+    def win(self):
+        render = self.font_win.render('YOU WIN!!!', 1, (randrange(40, 120), 0, 0))
+        rect = pygame.Rect(0, 0, 1000, 300)
+        rect.center = HALF_WIDTH, HALF_HEIGHT
+        pygame.draw.rect(self.display, BLACK, rect, border_radius=50)
+        self.display.blit(render, (rect.centerx - 430, rect.centery - 140))
+        pygame.display.flip()
+        self.clock.tick(15)
 
-        [pygame.draw.rect(self.display_mini_map, GREEN, (x, y, MAP_TILE, MAP_TILE)) for x, y in mini_map]
-        self.display.blit(self.display_mini_map, MINI_MAP_POS)
+    def key(self, key):
+        if key:
+            key = SpritesParams().sprite_parameters['sprite_key']['sprite']
+            key_rect = (15, 15, 15, 15)
+            self.display.blit(key, key_rect)
+
+
+    def menu(self):
+        x = 0
+        button_font = pygame.font.Font('font/font.ttf', 72)
+        label_font = pygame.font.Font('font/font1.otf', 400)
+        start = button_font.render('START', 1, pygame.Color('lightgray'))
+        button_start = pygame.Rect(0, 0, 400, 150)
+        button_start.center = HALF_WIDTH, HALF_HEIGHT
+        exit = button_font.render('EXIT', 1, pygame.Color('lightgray'))
+        button_exit = pygame.Rect(0, 0, 400, 150)
+        button_exit.center = HALF_WIDTH, HALF_HEIGHT + 200
+
+        while self.menu_trigger:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            self.display.blit(self.menu_picture, (0, 0), (x % WIDTH, HALF_HEIGHT, WIDTH, HEIGHT))
+            x += 1
+
+            pygame.draw.rect(self.display, BLACK, button_start, border_radius=25, width=10)
+            self.display.blit(start, (button_start.centerx - 130, button_start.centery - 70))
+
+            pygame.draw.rect(self.display, BLACK, button_exit, border_radius=25, width=10)
+            self.display.blit(exit, (button_exit.centerx - 85, button_exit.centery - 70))
+
+            color = randrange(40)
+            label = label_font.render('MINOTAURS', 1, (color, color, color))
+            self.display.blit(label, (15, -30))
+
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_click = pygame.mouse.get_pressed()
+            if button_start.collidepoint(mouse_pos):
+                pygame.draw.rect(self.display, BLACK, button_start, border_radius=25)
+                self.display.blit(start, (button_start.centerx - 130, button_start.centery - 70))
+                if mouse_click[0]:
+                    pygame.mouse.set_visible(False)
+                    self.menu_trigger = False
+            elif button_exit.collidepoint(mouse_pos):
+                pygame.draw.rect(self.display, BLACK, button_exit, border_radius=25)
+                self.display.blit(exit, (button_exit.centerx - 85, button_exit.centery - 70))
+                if mouse_click[0]:
+                    pygame.quit()
+                    sys.exit()
+
+            pygame.display.flip()
+            self.clock.tick(20)
