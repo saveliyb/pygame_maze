@@ -1,55 +1,53 @@
 import math
 
-
-WIDTH = 1024
-HEIGHT = 768
-PENTA_HIGHT = 5 * HEIGHT
+# display settings
+WIDTH = 1200
+HEIGHT = 800
+PENTA_HEIGHT = 5 * HEIGHT
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
+DOUBLE_HEIGHT = 2 * HEIGHT
 
-
-FPS = 30
-FPS_POS = (WIDTH-65, 5)
+FPS = 60
+FPS_POS = (WIDTH - 65, 5)
 
 TILE = 50
 
-#raycast settings
+# raycast settings
 FOV = math.pi / 3
 HALF_FOV = FOV / 2
-NUM_RAYS = 256
-MAX_DEPTH = 200
-DELTA_ANGEL = FOV / NUM_RAYS
+NUM_RAYS = 300
+MAX_DEPTH = 800
+DELTA_ANGLE = FOV / NUM_RAYS
 DIST = NUM_RAYS / (2 * math.tan(HALF_FOV))
 PROJ_COEFF = 3 * DIST * TILE
 SCALE = WIDTH // NUM_RAYS
 
-
-
-# map settings
-MINIMAP_SCALE = 5
-MINIMAP_RES = (WIDTH // MINIMAP_SCALE, HEIGHT // MINIMAP_SCALE)
-
-MAP_SCALE = 2 * MINIMAP_SCALE
-MAP_TILE = TILE // (MAP_SCALE)
-MINI_MAP_POS = (0, HEIGHT - HEIGHT // MINIMAP_SCALE)
-
-
-# player_pos = (HALF_WIDTH, HALF_HEIGHT)
+# player settings
 player_angle = 0
-player_speed = 4
+player_speed = 2
 
-#Zombie params
-zombie_speed_running = 5
-zombie_speed_walk = 2
+# sprite settings
+DOUBLE_PI = math.pi * 2
+CENTER_RAY = NUM_RAYS // 2 - 1
+FAKE_RAYS = 100
+FAKE_RAYS_RANGE = NUM_RAYS - 1 + 2 * FAKE_RAYS
 
+# texture settings (1200 x 1200)
+TEXTURE_WIDTH = 1200
+TEXTURE_HEIGHT = 1200
+TEXTURE_SCALE = TEXTURE_WIDTH // TILE
 
-BLACK = (0, 0, 0)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
+# colors
 WHITE = (255, 255, 255)
-SKY_BLUE = (100, 191, 230)
-DARK_GRAY = (169, 169, 169)
+BLACK = (0, 0, 0)
+RED = (220, 0, 0)
+GREEN = (0, 80, 0)
+BLUE = (0, 0, 255)
+DARKGRAY = (40, 40, 40)
+PURPLE = (120, 0, 120)
+SKYBLUE = (0, 186, 255)
 YELLOW = (220, 220, 0)
-PUPLE = (120, 0, 120)
-FLOOR_COLOR = (212, 83, 25)
+SANDY = (244, 164, 96)
+DARKBROWN = (97, 61, 25)
+DARKORANGE = (255, 140, 0)

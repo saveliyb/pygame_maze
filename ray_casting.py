@@ -1,85 +1,65 @@
-from settings import *
 import pygame
-from map import world_map, WORLD_WIDHT, WORLD_HEIGHT
-# from mob import Zombie
+from settings import *
+from map import world_map, WORLD_WIDTH, WORLD_HEIGHT
+from numba import njit
 
-
+@njit(fastmath=True)
 def mapping(a, b):
     return (a // TILE) * TILE, (b // TILE) * TILE
 
-
-def ray_casting_player(display, player_pos, player_angel):
-    xo, yo = player_pos
-    xm, ym = mapping(xo, yo)
-    cur_angle = player_angel - HALF_FOV
+@njit(fastmath=True)
+def ray_casting(player_pos, player_angle, world_map):
+    casted_walls = []
+    ox, oy = player_pos
+    texture_v, texture_h = 1, 1
+    xm, ym = mapping(ox, oy)
+    cur_angle = player_angle - HALF_FOV
     for ray in range(NUM_RAYS):
         sin_a = math.sin(cur_angle)
         cos_a = math.cos(cur_angle)
+        sin_a = sin_a if sin_a else 0.000001
+        cos_a = cos_a if cos_a else 0.000001
 
+        # verticals
         x, dx = (xm + TILE, 1) if cos_a >= 0 else (xm, -1)
-        for i in range(0, WORLD_WIDHT, TILE):
-            depth_v = (x - xo) / cos_a
-            y = yo + depth_v * sin_a
-            if mapping(x + dx, y) in world_map:
+        for i in range(0, WORLD_WIDTH, TILE):
+            depth_v = (x - ox) / cos_a
+            yv = oy + depth_v * sin_a
+            tile_v = mapping(x + dx, yv)
+            if tile_v in world_map:
+                texture_v = world_map[tile_v]
                 break
             x += dx * TILE
 
+        # horizontals
         y, dy = (ym + TILE, 1) if sin_a >= 0 else (ym, -1)
         for i in range(0, WORLD_HEIGHT, TILE):
-            depth_h = (y - yo) / sin_a
-            x = xo + depth_h * cos_a
-            if mapping(x, y + dy) in world_map:
+            depth_h = (y - oy) / sin_a
+            xh = ox + depth_h * cos_a
+            tile_h = mapping(xh, y + dy)
+            if tile_h in world_map:
+                texture_h = world_map[tile_h]
                 break
-
             y += dy * TILE
 
-        depth = depth_v if (depth_v < depth_h) else depth_h
+        # projection
+        depth, offset, texture = (depth_v, yv, texture_v) if depth_v < depth_h else (depth_h, xh, texture_h)
+        offset = int(offset) % TILE
+        depth *= math.cos(player_angle - cur_angle)
+        depth = max(depth, 0.00001)
+        proj_height = min(int(PROJ_COEFF / depth), PENTA_HEIGHT)
 
-        depth *= math.cos(player_angel - cur_angle)
-        depth = max(depth, 0.0000001)
-        proj_height = min(int(PROJ_COEFF / depth), PENTA_HIGHT)
+        casted_walls.append((depth, offset, proj_height, texture))
+        cur_angle += DELTA_ANGLE
+    return casted_walls
 
-        pygame.draw.rect(display, RED, (ray * SCALE, HALF_HEIGHT - proj_height // 2, SCALE, proj_height))
-
-        c = 255 / (1 + depth * depth * 0.000002)
-        color = (c // 2, c // 2, c // 2)
-        pygame.draw.rect(display, color, (ray * SCALE, HALF_HEIGHT - proj_height // 2, SCALE, proj_height))
-        cur_angle += DELTA_ANGEL
-
-
-# def ray_casting_mob(mob: Zombie):
-#     xo, yo = mob.get_pos
-#     xm, ym = mapping(xo, yo)
-#     cur_angle = mob.angle
-#     for ray in range(NUM_RAYS):
-#         sin_a = math.sin(cur_angle)
-#         cos_a = math.cos(cur_angle)
-#         x, dx = (xm + TILE, 1) if cos_a >= 0 else (xm, -1)
-#         for i in range(0, WORLD_WIDHT, TILE):
-#             depth_v = (x - xo) / cos_a
-#             y = yo + depth_v * sin_a
-#             if mapping(x + dx, y) == mapping(player.get_pos):
-#                 print(1)
-#                 break
-#             if mapping(x + dx, y) in world_map:
-#                 break
-#             x += dx * TILE
-#
-#         y, dy = (ym + TILE, 1) if sin_a >= 0 else (ym, -1)
-#         for i in range(0, WORLD_HEIGHT, TILE):
-#             depth_h = (y - yo) / sin_a
-#             x = xo + depth_h * cos_a
-#             if mapping(x, y + dy) == mapping(player.get_pos):
-#                 print(1)
-#                 break
-#             if mapping(x, y + dy) in world_map:
-#                 break
-#
-#
-#         depth = depth_v if (depth_v < depth_h) else depth_h
-#
-#         depth *= math.cos(mob.angle - cur_angle)
-#         depth = max(depth, 0.0000001)
-
-
-
+def ray_casting_walls(player, textures):
+    casted_walls = ray_casting(player.pos, player.angle, world_map)
+    walls = []
+    for ray, casted_values in enumerate(casted_walls):
+        depth, offset, proj_height, texture = casted_values
+        wall_column = textures[texture].subsurface(offset * TEXTURE_SCALE, 0, TEXTURE_SCALE, TEXTURE_HEIGHT)
+        wall_column = pygame.transform.scale(wall_column, (SCALE, proj_height))
+        wall_pos = (ray * SCALE, HALF_HEIGHT - proj_height // 2)
+        walls.append((depth, wall_column, wall_pos))
+    return walls
