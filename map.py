@@ -30,6 +30,7 @@ matrix_map = [
 WORLD_WIDTH = len(matrix_map[0]) * TILE
 WORLD_HEIGHT = len(matrix_map) * TILE
 world_map = Dict.empty(key_type=types.UniTuple(int32, 2), value_type=int32)
+world_map_for_minotaur = {}  # большой костыль из за numba
 mini_map = set()
 collision_walls = []
 for j, row in enumerate(matrix_map):
@@ -38,9 +39,13 @@ for j, row in enumerate(matrix_map):
             collision_walls.append(pygame.Rect(i * TILE, j * TILE, TILE, TILE))
             if char in [1, 4]:
                 world_map[(i * TILE, j * TILE)] = 1
+                world_map_for_minotaur[(i * TILE, j * TILE)] = 1
             elif char == 'P':
                 world_map[(i * TILE, j * TILE)] = 1
+                world_map_for_minotaur[(i * TILE, j * TILE)] = 1
                 player_pos = ((i - 1) * TILE, (j * TILE))
             elif char == 5:
+                world_map_for_minotaur[(i * TILE, j * TILE)] = 5
                 door = [i * TILE, j * TILE, 50, 50]
                 world_map[(i * TILE, j * TILE)] = 5
+print(world_map_for_minotaur)

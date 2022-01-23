@@ -43,6 +43,8 @@ while True:
 
     drawing.fps(clock)
     inteaction.minotaur_objects()
+    if inteaction.lose:
+        drawing.lose()
 
     pygame.display.flip()
     clock.tick(FPS)

@@ -49,6 +49,15 @@ class Drawing:
         self.display.blit(render, (rect.centerx - 430, rect.centery - 140))
         pygame.display.flip()
 
+    def lose(self):
+        while True:
+            render = self.font_win.render(' YOU DIED', 1, (randrange(40, 120), 0, 0))
+            rect = pygame.Rect(0, 0, 1000, 300)
+            rect.center = HALF_WIDTH, HALF_HEIGHT
+            pygame.draw.rect(self.display, BLACK, rect, border_radius=50)
+            self.display.blit(render, (rect.centerx - 430, rect.centery - 140))
+            pygame.display.flip()
+
     def key(self, key):
         if key:
             key = SpritesParams().sprite_parameters['sprite_key']['sprite']

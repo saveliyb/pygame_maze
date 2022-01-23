@@ -25,7 +25,7 @@ class SpritesParams:
                 'viewing_angles': None,
                 'shift': 0.0,
                 'scale': (1.1, 1.1),
-                'side': 10,
+                'side': 1,
                 'animation': [],
                 'animation_dist': 10,
                 'animation_speed': 6,

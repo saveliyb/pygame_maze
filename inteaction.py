@@ -1,5 +1,5 @@
 from settings import *
-from map import world_map, matrix_map
+from map import world_map, world_map_for_minotaur
 from ray_casting import mapping
 import math
 import pygame
@@ -50,6 +50,7 @@ class Interaction:
         self.drawing = drawing
         self.go_to_player = False
         self.minotaur = self.sprites.list_of_objects[[_.flag for _ in self.sprites.list_of_objects].index('npc')]
+        self.lose = False
 
     def minotaur_objects(self):
         for obj in sorted(self.sprites.list_of_objects, key=lambda obj: obj.distance_to_sprite):
@@ -103,3 +104,32 @@ class Interaction:
                     self.minotaur.y = self.minotaur.y + 1 if dy < 0 else self.minotaur.y - 1
                 else:
                     pass
+
+        if [int(_ // 50) for _ in mapping(self.minotaur.x, self.minotaur.y)] == \
+                [int(_ // 50) for _ in mapping(*self.player.pos)]:
+            self.lose = True
+        self.k = 0
+        self.minotaur_pos = [int(_) for _ in mapping(self.minotaur.x, self.minotaur.y)]
+        self.check()
+
+    def check(self):
+        print(self.minotaur_pos)
+        try:
+            if world_map_for_minotaur[tuple(self.minotaur_pos)] == 1:
+                if world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x + self.k, self.minotaur.y)])] == 0:
+                    self.minotaur.x += self.k
+                    self.k = 0
+                elif world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x - self.k, self.minotaur.y)])] == 0:
+                    self.minotaur.x -= self.k
+                    self.k = 0
+                elif world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x, self.minotaur.y + self.k)])] == 0:
+                    self.minotaur.y += self.k
+                    self.k = 0
+                elif world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x, self.minotaur.y - self.k)])]  == 0:
+                    self.minotaur.y -= self.k
+                    self.k = 0
+                else:
+                    self.k += 0.2
+
+        except KeyError:
+            pass
