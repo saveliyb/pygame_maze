@@ -20,6 +20,7 @@ drawing = Drawing(display, clock)
 interaction = Interaction(player, Sprites, drawing)
 
 drawing.menu()
+interaction.play_music()
 
 while True:
     for event in pygame.event.get():

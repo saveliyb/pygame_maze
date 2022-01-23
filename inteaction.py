@@ -153,3 +153,9 @@ class Interaction:
         if self.see_sound_flag:
             self.see_sound.play()
             self.see_sound_flag = False
+
+    def play_music(self):
+        pygame.mixer.pre_init(44100, -16, 2, 2048)
+        pygame.mixer.init()
+        pygame.mixer.music.load('sound/theme.wav')
+        pygame.mixer.music.play(10)

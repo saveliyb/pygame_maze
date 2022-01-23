@@ -50,6 +50,9 @@ class Drawing:
         pygame.display.flip()
 
     def lose(self):
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load('sound/died.wav')
+        pygame.mixer.music.play()
         while True:
             render = self.font_win.render(' YOU DIED', 1, (randrange(40, 120), 0, 0))
             rect = pygame.Rect(0, 0, 1000, 300)
