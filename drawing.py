@@ -21,7 +21,7 @@ class Drawing:
                          'S': pygame.image.load('img/sky2.png').convert()
                          }
         self.menu_trigger = True
-        self.menu_picture = pygame.image.load('img/sky2.png').convert()
+        self.menu_picture = pygame.image.load('img/sky2.png').convert_alpha()
 
     def background(self, angle):
         sky_offset = -10 * math.degrees(angle) % WIDTH
@@ -63,6 +63,11 @@ class Drawing:
             key = SpritesParams().sprite_parameters['sprite_key']['sprite']
             key_rect = (15, 15, 15, 15)
             self.display.blit(key, key_rect)
+
+    def see(self):
+        see = pygame.image.load('img/see.png').convert_alpha()
+        see_rect = (WIDTH // 2 - 45 // 2, 30, 45, 45)
+        self.display.blit(see, see_rect)
 
 
     def menu(self):

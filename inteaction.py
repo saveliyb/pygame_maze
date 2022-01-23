@@ -51,6 +51,10 @@ class Interaction:
         self.go_to_player = False
         self.minotaur = self.sprites.list_of_objects[[_.flag for _ in self.sprites.list_of_objects].index('npc')]
         self.lose = False
+        self.see = False
+        # self.see_drawning = False
+        self.see_sound_flag = False
+        self.see_sound = pygame.mixer.Sound('sound/see.wav')
 
     def minotaur_objects(self):
         for obj in sorted(self.sprites.list_of_objects, key=lambda obj: obj.distance_to_sprite):
@@ -59,11 +63,20 @@ class Interaction:
                 if obj.flag == 'npc':
                     self.go_to_player = True
                     self.last_player_pos = [int(_ // 50) for _ in mapping(*self.player.pos)]
-                    # self.minotaur = obj
+                    if not self.see:
+                        self.see_sound_flag = True
+                    self.see = True
+            else:
+                if obj.flag == 'npc':
+                    self.see = False
+
+
+
         try:
             self.minotaur_move()
         except AttributeError:
             pass
+
         # self.go_to_player = False
 
     def minotaur_move(self):
@@ -73,7 +86,7 @@ class Interaction:
             start = [int(_ // 50) for _ in
                      mapping(*list(*[obj.pos for obj in self.sprites.list_of_objects if obj.flag == 'npc']))]
             way = return_way(matrix_map, start=start)
-            # print(way)
+
         else:
             start = [int(_ // 50) for _ in
                      mapping(*list(*[obj.pos for obj in self.sprites.list_of_objects if obj.flag == 'npc']))]
@@ -85,6 +98,7 @@ class Interaction:
             else:
                 self.last_player_pos = (-1, -1)
                 self.go_to_player = False
+
         if way:
             try:
                 # print(way[0], way[1])
@@ -133,3 +147,9 @@ class Interaction:
 
         except KeyError:
             pass
+
+    def see_music(self):
+        # pygame.mixer.music.load('sound/see.wav')
+        if self.see_sound_flag:
+            self.see_sound.play()
+            self.see_sound_flag = False
