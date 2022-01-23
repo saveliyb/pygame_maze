@@ -2,6 +2,10 @@
 from map import matrix_map
 from settings import *
 from collections import deque
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
+
 
 # _ = False
 # matrix_map = [
@@ -34,7 +38,6 @@ def get_next_nodes(x, y):
     return [(x + dx, y + dy) for dx, dy in ways if check_next_node(x + dx, y + dy)]
 
 
-
 def bfs(start, goal, graph):
     queue = deque([start])
     visited = {start: None}
@@ -54,8 +57,10 @@ def bfs(start, goal, graph):
             pass
     return queue, visited
 
+
 cols, rows = len(matrix_map[0]), len(matrix_map)
 TILE = 50
+
 
 def map(matrix_map, start=(0, 0), finish=(0, 0)):
     graph = {}
@@ -78,24 +83,22 @@ def map(matrix_map, start=(0, 0), finish=(0, 0)):
                 graph[(x, y)] = graph.get((x, y), []) + get_next_nodes(x, y)
     return (graph, start, finish)
 
+
 def return_way(matrix_map, start=(0, 0), finish=(0, 0)):
-    graph, start, finish = map(matrix_map, tuple(start), tuple(finish))
-    # print(start, finish)
-    # queue = deque([start])
-    visited = {start: None}
-    # print(graph)
-    queue, visited = bfs(start, finish, graph)
-    # print(queue, visited)
-    path_head, path_segment = finish, finish
-    lst = []
-    while path_segment and path_segment in visited:
-        path_segment = visited[path_segment]
-        lst.append(path_segment)
-        # print(path_segment)
-    lst = lst[:-1][::-1]
-    # print(lst)
-    # graph.clear()
-    return lst
-
-
+    a = [row[:] for row in matrix_map]
+    for i in a:
+        for ind, j in enumerate(i):
+            if j == 1:
+                i[ind] = 0
+                continue
+            if j is False or j == 'P':
+                i[ind] = 1
+                continue
+    grid = Grid(matrix=a)
+    start = grid.node(*start)
+    end = grid.node(*finish)
+    finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+    path, runs = finder.find_path(start, end, grid)
+    print(path)
+    return path
 # return_way()
