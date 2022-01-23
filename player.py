@@ -19,7 +19,7 @@ class Player:
         # collision parameters
         self.side = 30
         self.rect = pygame.Rect(*player_pos, self.side, self.side)
-        self.key = 1
+        self.key = 0
         self.iswining = 0
 
 
