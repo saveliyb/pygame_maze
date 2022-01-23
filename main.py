@@ -9,10 +9,15 @@ from sprite_objects import *
 from player import *
 from ray_casting import ray_casting_walls
 from drawing import Drawing
+from inteaction import Interaction
 
 clock = pygame.time.Clock()
 player = Player(Sprites.list_of_objects)
 drawing = Drawing(display, clock)
+
+
+# print(SpritesParams)
+inteaction = Interaction(player, Sprites, drawing)
 
 drawing.menu()
 
@@ -37,6 +42,7 @@ while True:
         drawing.win()
 
     drawing.fps(clock)
+    inteaction.minotaur_objects()
 
     pygame.display.flip()
     clock.tick(FPS)

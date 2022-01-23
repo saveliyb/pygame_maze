@@ -36,7 +36,7 @@ for j, row in enumerate(matrix_map):
     for i, char in enumerate(row):
         if char:
             collision_walls.append(pygame.Rect(i * TILE, j * TILE, TILE, TILE))
-            if char == 1:
+            if char in [1, 4]:
                 world_map[(i * TILE, j * TILE)] = 1
             elif char == 'P':
                 world_map[(i * TILE, j * TILE)] = 1
