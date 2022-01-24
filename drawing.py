@@ -42,12 +42,19 @@ class Drawing:
         self.display.blit(render, FPS_POS)
 
     def win(self):
-        render = self.font_win.render('YOU WIN!!!', 1, (randrange(40, 120), 0, 0))
-        rect = pygame.Rect(0, 0, 1000, 300)
-        rect.center = HALF_WIDTH, HALF_HEIGHT
-        pygame.draw.rect(self.display, BLACK, rect, border_radius=50)
-        self.display.blit(render, (rect.centerx - 430, rect.centery - 140))
-        pygame.display.flip()
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load('sound/win.wav')
+        pygame.mixer.music.play()
+        while True:
+            render = self.font_win.render('YOU WIN!!!', 1, (randrange(40, 120), 0, 0))
+            rect = pygame.Rect(0, 0, 1000, 300)
+            rect.center = HALF_WIDTH, HALF_HEIGHT
+            pygame.draw.rect(self.display, BLACK, rect, border_radius=50)
+            self.display.blit(render, (rect.centerx - 430, rect.centery - 140))
+            pygame.display.flip()
+            for event in pygame.event.get():
+                if event == 'QUIT':
+                    exit()
 
     def lose(self):
         pygame.mixer.music.stop()
@@ -60,6 +67,9 @@ class Drawing:
             pygame.draw.rect(self.display, BLACK, rect, border_radius=50)
             self.display.blit(render, (rect.centerx - 430, rect.centery - 140))
             pygame.display.flip()
+            for event in pygame.event.get():
+                if event == 'QUIT':
+                    exit()
 
     def key(self, key):
         if key:

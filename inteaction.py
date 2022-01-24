@@ -55,6 +55,8 @@ class Interaction:
         # self.see_drawning = False
         self.see_sound_flag = False
         self.see_sound = pygame.mixer.Sound('sound/see.wav')
+        self.way_flag = True
+        self.LEFT, self.RIGHT, self.TOP, self.BOTTOM = False, False, False, False
 
     def minotaur_objects(self):
         for obj in sorted(self.sprites.list_of_objects, key=lambda obj: obj.distance_to_sprite):
@@ -81,15 +83,16 @@ class Interaction:
 
     def minotaur_move(self):
         way = []
+        start = [int(_ // 50) for _ in mapping(*[self.minotaur.x, self.minotaur.y])]
         if not self.go_to_player:
             # pass
-            start = [int(_ // 50) for _ in
-                     mapping(*list(*[obj.pos for obj in self.sprites.list_of_objects if obj.flag == 'npc']))]
+            # start = [int(_ // 50) for _ in
+            #          mapping(*list(*[obj.pos for obj in self.sprites.list_of_objects if obj.flag == 'npc']))]
             way = return_way(matrix_map, start=start)
 
         else:
-            start = [int(_ // 50) for _ in
-                     mapping(*list(*[obj.pos for obj in self.sprites.list_of_objects if obj.flag == 'npc']))]
+            # start = [int(_ // 50) for _ in
+            #          mapping(*list(*[obj.pos for obj in self.sprites.list_of_objects if obj.flag == 'npc']))]
             # print(self.last_player_pos)
             near_TILE = [tuple[self.last_player_pos[0] + _[0], self.last_player_pos[1] + _[1]]
                          for _ in [[-1, 0], [0, -1], [1, 0], [0, 1]]]
@@ -98,19 +101,71 @@ class Interaction:
             else:
                 self.last_player_pos = (-1, -1)
                 self.go_to_player = False
-
+        # print(way)
+        # way = [(_[0] * TILE + TILE // 2, _[1] * TILE + TILE // 2) for _ in way]
+        # print(way)
         if way:
+
+            # way_start = 0
+
             try:
+                # if not way_start:
+                #     way_start = way[0]
+                # else:
+                #     if self.LEFT
                 # print(way[0], way[1])
-                if way[0][0] > way[1][0]:
-                    self.minotaur.x -= 1.5
-                elif way[0][0] < way[1][0]:
-                    self.minotaur.x += 1.5
-                elif way[0][1] > way[1][1]:
-                    self.minotaur.y -= 1.5
-                elif way[0][1] < way[1][1]:
-                    self.minotaur.y += 1.5
+                # print(way[0][0] * TILE + TILE //2)
+                print(self.LEFT, self.RIGHT, self.TOP, self.BOTTOM, self.way_flag, way)
+                if self.way_flag:
+                    # print(way[0][1] > way[1][1])
+                    if way[0][0] > way[1][0]:
+                        self.minotaur.x -= self.minotaur.speed
+                        # self.LEFT = True
+                        # self.way_flag = False
+                    elif way[0][0] < way[1][0]:
+                        self.minotaur.x += self.minotaur.speed
+                        # self.RIGHT = True
+                        # self.way_flag = False
+                    elif way[0][1] > way[1][1]:
+                        # self.TOP = True
+                        # self.way_flag = False
+                        self.minotaur.y -= self.minotaur.speed
+                    elif way[0][1] < way[1][1]:
+                        self.minotaur.y += self.minotaur.speed
+                        # self.BOTTOM = True
+                        # self.way_flag = False
+                # else:
+                #     # print(way[0][1] * TILE + TILE // 2,  way[1][1] * TILE)
+                #     if self.LEFT:
+                #         print(way[0][0] * TILE - TILE // 2, way[1][0] * TILE)
+                #         if way[0][0] * TILE - TILE // 2 > way[1][0] * TILE:
+                #             self.minotaur.x -= 2
+                #         else:
+                #             self.LEFT = False
+                #             self.way_flag = True
+                #     elif self.RIGHT:
+                #         if way[0][0] * TILE + TILE // 2 < way[1][0] * TILE:
+                #             self.minotaur.x += 2
+                #         else:
+                #             self.RIGHT = False
+                #             self.way_flag = True
+                #     elif self.TOP:
+                #         print('self.TOP')
+                #         if way[0][1] * TILE - TILE // 2 > way[1][1] * TILE:
+                #             self.minotaur.y -= 2
+                #         else:
+                #             self.TOP = False
+                #             self.way_flag = True
+                #     elif self.BOTTOM:
+                #         if way[0][1] * TILE + TILE // 2 < way[1][1] * TILE:
+                #             self.minotaur.x += 2
+                #         else:
+                #             self.BOTTOM = False
+                #             self.way_flag = True
+
+
             except IndexError:
+                print('ERROR')
                 if self.go_to_player:
                     dx = self.minotaur.x - self.player.pos[0]
                     dy = self.minotaur.y - self.player.pos[1]
@@ -127,26 +182,27 @@ class Interaction:
         self.check()
 
     def check(self):
-        print(self.minotaur_pos)
-        try:
-            if world_map_for_minotaur[tuple(self.minotaur_pos)] == 1:
-                if world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x + self.k, self.minotaur.y)])] == 0:
-                    self.minotaur.x += self.k
-                    self.k = 0
-                elif world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x - self.k, self.minotaur.y)])] == 0:
-                    self.minotaur.x -= self.k
-                    self.k = 0
-                elif world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x, self.minotaur.y + self.k)])] == 0:
-                    self.minotaur.y += self.k
-                    self.k = 0
-                elif world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x, self.minotaur.y - self.k)])]  == 0:
-                    self.minotaur.y -= self.k
-                    self.k = 0
-                else:
-                    self.k += 0.2
+        # print(self.minotaur_pos)
+        for _ in [-0.2, -0.1, 0, 0.1, 0.2]:
+            try:
+                if world_map_for_minotaur[tuple([k + _ for k in self.minotaur_pos])] == 1:
+                    if world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x + self.k, self.minotaur.y)])] == 0:
+                        self.minotaur.x += self.k
+                        self.k = 0
+                    elif world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x - self.k, self.minotaur.y)])] == 0:
+                        self.minotaur.x -= self.k
+                        self.k = 0
+                    elif world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x, self.minotaur.y + self.k)])] == 0:
+                        self.minotaur.y += self.k
+                        self.k = 0
+                    elif world_map_for_minotaur[tuple([int(_) for _ in mapping(self.minotaur.x, self.minotaur.y - self.k)])]  == 0:
+                        self.minotaur.y -= self.k
+                        self.k = 0
+                    else:
+                        self.k += 0.2
 
-        except KeyError:
-            pass
+            except KeyError:
+                pass
 
     def see_music(self):
         # pygame.mixer.music.load('sound/see.wav')

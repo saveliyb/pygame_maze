@@ -18,26 +18,29 @@ class SpritesParams:
                 'animation_speed': 10,
                 'flag': 'key',
                 'blocked': True,
-                'obj_action': []
-            },
+                'obj_action': [],
+                'speed': None
+        },
             'npc_minotaur': {
                 'sprite': pygame.image.load('sprites/minotaur/base/0.png').convert_alpha(),
                 'viewing_angles': None,
                 'shift': 0.0,
-                'scale': (1.1, 1.1),
+                'scale': (1.1, 0.9),
                 'side': 1,
-                'animation': [],
-                'animation_dist': 10,
-                'animation_speed': 6,
+                'animation': deque(
+                    [pygame.image.load(f'sprites/minotaur/anim/{i}.png').convert_alpha() for i in range(2)]),
+                'animation_dist': 800,
+                'animation_speed': 10,
                 'blocked': True,
                 'flag': 'npc',
                 'obj_action': deque(
                     [pygame.image.load(f'sprites/minotaur/anim/{i}.png').convert_alpha() for i in range(1)]),
+                'speed': 1.9
             }
         }
         self.list_of_objects = [
             SpriteObject(self.sprite_parameters['sprite_key'], (7.1, 2.1)),
-            SpriteObject(self.sprite_parameters['npc_minotaur'], (7.4, 3.1)),
+            SpriteObject(self.sprite_parameters['npc_minotaur'], (7.4, 4.1)),
         ]
     def return_list(self):
         return self.list_of_objects
@@ -58,11 +61,12 @@ class SpriteObject:
         self.obj_action = parameters['obj_action'].copy()
         self.x, self.y = pos[0] * TILE, pos[1] * TILE
         self.side = parameters['side']
-        self.dead_animation_count = 0
+        self.speed = parameters['speed']
+        # self.dead_animation_count = 0
         self.animation_count = 0
         self.npc_action_trigger = False
-        self.door_open_trigger = False
-        self.door_prev_pos = self.y if self.flag == 'door_h' else self.x
+        # self.door_open_trigger = False
+        # self.door_prev_pos = self.y if self.flag == 'door_h' else self.x
         self.delete = False
         if self.viewing_angles:
             if len(self.object) == 8:
@@ -90,13 +94,11 @@ class SpriteObject:
 
         delta_rays = int(gamma / DELTA_ANGLE)
         self.current_ray = CENTER_RAY + delta_rays
-        if self.flag not in {'door_h', 'door_v'}:
-            self.distance_to_sprite *= math.cos(HALF_FOV - self.current_ray * DELTA_ANGLE)
 
         fake_ray = self.current_ray + FAKE_RAYS
         if 0 <= fake_ray <= FAKE_RAYS_RANGE and self.distance_to_sprite > 30:
             self.proj_height = min(int(PROJ_COEFF / self.distance_to_sprite),
-                                   DOUBLE_HEIGHT if self.flag not in {'door_h', 'door_v'} else HEIGHT)
+                                   DOUBLE_HEIGHT)
             sprite_width = int(self.proj_height * self.scale[0])
             sprite_height = int(self.proj_height * self.scale[1])
             half_sprite_width = sprite_width // 2

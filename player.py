@@ -17,7 +17,7 @@ class Player:
         self.angle = player_angle
         self.sensitivity = 0.004
         # collision parameters
-        self.side = 30
+        self.side = 20
         self.rect = pygame.Rect(*player_pos, self.side, self.side)
         self.key = 0
         self.iswining = 0

@@ -8,7 +8,7 @@ pygame.mixer.init()
 from sprite_objects import *
 
 from player import *
-from ray_casting import ray_casting_walls
+from ray_casting import ray_casting_walls, mapping
 from drawing import Drawing
 from inteaction import Interaction
 
@@ -41,6 +41,9 @@ while True:
     # print(player.iswining)
     if player.iswin:
         drawing.win()
+        pygame.display.flip()
+        break
+
 
     drawing.fps(clock)
     interaction.minotaur_objects()
@@ -51,6 +54,6 @@ while True:
         drawing.see()
         # interaction.see = False
         # interaction.see_sound_flag = False
-
+    print(interaction.minotaur.pos, [int(_ // 50) for _ in mapping(*interaction.minotaur.pos)])
     pygame.display.flip()
     clock.tick(FPS)
